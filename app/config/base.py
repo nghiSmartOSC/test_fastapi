@@ -1,7 +1,10 @@
-from abc import ABC
 import os
+from abc import ABC
+from fastapi import FastAPI
 
-BASE_DIR = os.path.abspath(os.curdir())
+
+from app.controllers import routers
+
 
 class ISetting(ABC):
     PROJECT_NAME: str
@@ -18,15 +21,22 @@ class ISettingDB(ISetting):
 class DevSettings(ISettingDB):
     PROJECT_NAME: str = "Dev API"
     PROJECT_VERSION: str = "1.0.0"
-    DB_URL: str = os.environ['DB_URL_DEV']
-
+    DB_URL: str = os.environ['DATABASE_URL']
 
 
 class TestSettings(ISettingDB):
     PROJECT_NAME: str = "Test API"
     PROJECT_VERSION: str = "1.0.0"
-    DB_URL: str = os.environ['DB_URL_TEST']
+    DB_URL: str = os.environ['DATABASE_URL_TEST']
 
 
-dev_settings = DevSettings()
-test_setting = TestSettings()
+def set_router(app: FastAPI, routers):
+    for route in routers:
+        app.include_router(route.route, prefix=route.prefix)
+
+
+def start_application(settings: ISetting):
+    config = settings.get_config()
+    app = FastAPI(**config)
+    set_router(app, routers)
+    return app

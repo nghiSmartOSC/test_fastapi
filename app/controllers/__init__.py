@@ -1,6 +1,11 @@
-from fastapi_utils.inferring_router import InferringRouter
-from fastapi_utils.cbv import cbv
+from app.controllers.accounts.user import router as user_router
 
-router = InferringRouter()
+class RouterConf:
+    def __init__(self, route, prefix):
+        self.route = route
+        self.prefix = prefix
 
-from app.controllers.accounts.user import *  # noqa
+
+routers = [
+    RouterConf(user_router, "/api/v1/user"),
+]

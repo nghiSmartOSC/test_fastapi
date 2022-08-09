@@ -9,7 +9,7 @@ from alembic import context
 
 from dotenv import load_dotenv
 
-from app.config.base import BASE_DIR
+from main import BASE_DIR
 
 load_dotenv(os.path.join(BASE_DIR, '.env'))
 sys.path.append(BASE_DIR)
@@ -25,10 +25,10 @@ fileConfig(config.config_file_name)
 
 # add your model's MetaData object here
 # for 'autogenerate' support
-from app import models
+# from app import models  # noqa
 # target_metadata = mymodel.Base.metadata
+from app import models
 target_metadata = models.Base.metadata
-
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
 # my_important_option = config.get_main_option("my_important_option")
@@ -74,7 +74,7 @@ def run_migrations_online() -> None:
 
     with connectable.connect() as connection:
         context.configure(
-            connection=connection, target_metadata=target_metadata
+            connection=connection, target_metadata=target_metadata,compare_type=True
         )
 
         with context.begin_transaction():
